@@ -10,6 +10,8 @@ UCLASS()
 class SPACESHARK_API AShark : public AActor
 {
 	GENERATED_BODY()
+		UPROPERTY(VisibleAnywhere)
+		USkeletalMeshComponent* VisualMesh;
 	
 public:	
 	// Sets default values for this actor's properties
