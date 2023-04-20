@@ -33,13 +33,11 @@ void AShark::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	FVector NewLocation = GetActorLocation();
-	FRotator NewRotation = GetActorRotation();
 	float RunningTime = GetGameTimeSinceCreation();
 	float DeltaHeight = (FMath::Sin(RunningTime + DeltaTime) - FMath::Sin(RunningTime));
-	NewLocation.Z += DeltaHeight * 20.0f;
+	NewLocation.X += DeltaHeight * 20.0f;
 	float DeltaRotation = DeltaTime * 20.0f;
-	NewRotation.Yaw += DeltaRotation;
-	SetActorLocationAndRotation(NewLocation, NewRotation);
+	SetActorLocation(NewLocation);
 
 }
 
