@@ -3,19 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Character.h"
 #include "Shark.generated.h"
 
 UCLASS()
-class SPACESHARK_API AShark : public AActor
+class SPACESHARK_API AShark : public ACharacter
 {
 	GENERATED_BODY()
-		UPROPERTY(VisibleAnywhere)
-		USkeletalMeshComponent* VisualMesh;
-	
-public:	
-	// Sets default values for this actor's properties
+
+public:
+	// Sets default values for this character's properties
 	AShark();
+	UPROPERTY(EditAnywhere, Category="Shark")
+		AActor* player;
 
 protected:
 	// Called when the game starts or when spawned
@@ -24,5 +24,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 };
