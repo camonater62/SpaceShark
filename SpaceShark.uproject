@@ -33,5 +33,11 @@
 				"Win64"
 			]
 		}
+	],
+	"TargetPlatforms": [
+		"Android",
+		"Linux",
+		"Windows",
+		"IOS"
 	]
 }

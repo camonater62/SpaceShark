@@ -56,32 +56,33 @@ void AShark::Tick(float DeltaTime)
 		// Get the location of the Actor
 		FVector playerLocation = bpFirstPerson->GetActorLocation();
 
-		// Do something with the location (e.g. print it)
-		UE_LOG(LogTemp, Warning, TEXT("BP_FirstPerson location: (%f, %f, %f)"), playerLocation.X, playerLocation.Y, playerLocation.Z);
-
 		// Assuming this code is inside an Actor class, get a reference to the current actor
 		AActor* currentActor = Cast<AActor>(this);
 
 		// Set the speed of movement towards the target location
-		float speed = 0.1f; // Set your desired movement speed here
+		float speed = 0.1f;
 
 		// Calculate the new position towards the target location using lerp
 		FVector currentLocation = currentActor->GetActorLocation();
-		FVector newLocation = FMath::Lerp(currentLocation, playerLocation, speed * DeltaTime);
+		const float forceMag = 1000000;
+		FVector toPlayer = (playerLocation - currentLocation).GetSafeNormal();
 
-		// Move the actor to the new location
-		currentActor->SetActorLocation(newLocation);
+		// Log
+		UE_LOG(LogTemp, Warning, TEXT("BP_FirstPerson location: (%f, %f, %f)"), playerLocation.X, playerLocation.Y, playerLocation.Z);
+		UE_LOG(LogTemp, Warning, TEXT("Shark location: (%f, %f, %f)"), currentLocation.X, currentLocation.Y, currentLocation.Z);
 
-		// Get the current velocity of the actor
-		FVector velocity = (newLocation - currentLocation).GetSafeNormal();
-		velocity *= -1;
-
-		// If the velocity vector is not zero, set the rotation of the actor to match the velocity direction
-		if (!velocity.IsNearlyZero())
+		// Movement
+		if (!toPlayer.IsNearlyZero())
 		{
+			VisualMesh->AddForce(toPlayer * forceMag);
+		}
+
+		// Rotation
+		/*FVector velocity = GetVelocity();
+		if (!velocity.IsNearlyZero()) {
 			FRotator newRotation = velocity.Rotation();
 			currentActor->SetActorRotation(newRotation);
-		}
+		}*/
 	}
 
 }
