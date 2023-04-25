@@ -24,6 +24,24 @@ AShark::AShark()
 void AShark::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Get a reference to the current level
+	ULevel* currentLevel = GetWorld()->GetCurrentLevel();
+
+	// Iterate through all the Actors in the level and print their names
+	// Find the Actor with the name "BP_FirstPerson"
+	for (AActor* actor : currentLevel->Actors)
+	{
+		if (actor) {
+			UE_LOG(LogTemp, Warning, TEXT("Actor Name: %s"), *actor->GetName());
+			if (actor && actor->GetName() == "BP_FirstPersonCharacter_C_0")
+			{
+				UE_LOG(LogTemp, Warning, TEXT("We found the character!"));
+				bpFirstPerson = actor;
+				break;
+			}
+		}
+	}
 	
 }
 
@@ -31,13 +49,40 @@ void AShark::BeginPlay()
 void AShark::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	FVector NewLocation = GetActorLocation();
-	float RunningTime = GetGameTimeSinceCreation();
-	float DeltaHeight = (FMath::Sin(RunningTime + DeltaTime) - FMath::Sin(RunningTime));
-	NewLocation.X += DeltaHeight * 20.0f;
-	float DeltaRotation = DeltaTime * 20.0f;
-	SetActorLocation(NewLocation);
+
+	// Check if the Actor was found
+	if (bpFirstPerson != nullptr)
+	{
+		// Get the location of the Actor
+		FVector playerLocation = bpFirstPerson->GetActorLocation();
+
+		// Do something with the location (e.g. print it)
+		UE_LOG(LogTemp, Warning, TEXT("BP_FirstPerson location: (%f, %f, %f)"), playerLocation.X, playerLocation.Y, playerLocation.Z);
+
+		// Assuming this code is inside an Actor class, get a reference to the current actor
+		AActor* currentActor = Cast<AActor>(this);
+
+		// Set the speed of movement towards the target location
+		float speed = 0.1f; // Set your desired movement speed here
+
+		// Calculate the new position towards the target location using lerp
+		FVector currentLocation = currentActor->GetActorLocation();
+		FVector newLocation = FMath::Lerp(currentLocation, playerLocation, speed * DeltaTime);
+
+		// Move the actor to the new location
+		currentActor->SetActorLocation(newLocation);
+
+		// Get the current velocity of the actor
+		FVector velocity = (newLocation - currentLocation).GetSafeNormal();
+		velocity *= -1;
+
+		// If the velocity vector is not zero, set the rotation of the actor to match the velocity direction
+		if (!velocity.IsNearlyZero())
+		{
+			FRotator newRotation = velocity.Rotation();
+			currentActor->SetActorRotation(newRotation);
+		}
+	}
 
 }
 
