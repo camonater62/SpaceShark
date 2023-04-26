@@ -34,11 +34,10 @@ void AShark::BeginPlay()
 	{
 		if (actor) {
 			UE_LOG(LogTemp, Warning, TEXT("Actor Name: %s"), *actor->GetName());
-			if (actor && actor->GetName() == "BP_FirstPersonCharacter_C_0")
+			if (actor && actor->GetName().StartsWith("BP_FirstPersonCharacter"))
 			{
 				UE_LOG(LogTemp, Warning, TEXT("We found the character!"));
 				bpFirstPerson = actor;
-				break;
 			}
 		}
 	}
