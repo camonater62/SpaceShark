@@ -37,7 +37,7 @@ void AShark::BeginPlay()
 			if (actor && actor->GetName().StartsWith("BP_FirstPersonCharacter"))
 			{
 				UE_LOG(LogTemp, Warning, TEXT("We found the character!"));
-				bpFirstPerson = actor;
+				BPFirstPerson = actor;
 			}
 		}
 	}
@@ -50,39 +50,29 @@ void AShark::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// Check if the Actor was found
-	if (bpFirstPerson != nullptr)
+	if (BPFirstPerson != nullptr && VisualMesh != nullptr)
 	{
-		// Get the location of the Actor
-		FVector playerLocation = bpFirstPerson->GetActorLocation();
+		// Pos
+		FVector PlayerLocation = BPFirstPerson->GetActorLocation();
+		FVector CurrentLocation = GetActorLocation();
+		FVector ToPlayer = (PlayerLocation - CurrentLocation).GetSafeNormal();
 
-		// Assuming this code is inside an Actor class, get a reference to the current actor
-		AActor* currentActor = Cast<AActor>(this);
+		// Force calcs
+		const float ForceMag = 1000000;
+		FVector Force = ForceMag * ToPlayer;
+		FVector ForceOffset(0,0,0);
 
-		// Set the speed of movement towards the target location
-		float speed = 0.1f;
+		const FName HeadBoneName = "jaw_master";
 
-		// Calculate the new position towards the target location using lerp
-		FVector currentLocation = currentActor->GetActorLocation();
-		const float forceMag = 1000000;
-		FVector toPlayer = (playerLocation - currentLocation).GetSafeNormal();
-
-		// Log
-		UE_LOG(LogTemp, Warning, TEXT("BP_FirstPerson location: (%f, %f, %f)"), playerLocation.X, playerLocation.Y, playerLocation.Z);
-		UE_LOG(LogTemp, Warning, TEXT("Shark location: (%f, %f, %f)"), currentLocation.X, currentLocation.Y, currentLocation.Z);
-
-		// Movement
-		if (!toPlayer.IsNearlyZero())
-		{
-			VisualMesh->AddForce(toPlayer * forceMag);
+		int32 HeadBoneIndex = VisualMesh->GetBoneIndex(HeadBoneName);
+		if (HeadBoneIndex != INDEX_NONE) {
+			ForceOffset = VisualMesh->GetBoneLocation(HeadBoneName);
 		}
 
-		// Rotation
-		/*FVector velocity = GetVelocity();
-		if (!velocity.IsNearlyZero()) {
-			FRotator newRotation = velocity.Rotation();
-			currentActor->SetActorRotation(newRotation);
-		}*/
-	}
+		VisualMesh->AddForceAtLocation(ToPlayer * ForceMag, ForceOffset);
 
+		// Log
+		// UE_LOG(LogTemp, Warning, TEXT("BP_FirstPerson location: %s, Shark location: %s"), *PlayerLocation.ToString(), *CurrentLocation.ToString());
+	}
 }
 

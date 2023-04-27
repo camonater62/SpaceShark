@@ -26,6 +26,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	AActor* bpFirstPerson;
+	AActor* BPFirstPerson;
 
 };
