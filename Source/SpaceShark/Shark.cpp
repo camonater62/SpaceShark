@@ -33,10 +33,10 @@ void AShark::BeginPlay()
 	for (AActor* actor : currentLevel->Actors)
 	{
 		if (actor) {
-			UE_LOG(LogTemp, Warning, TEXT("Actor Name: %s"), *actor->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("Actor Name: %s"), *actor->GetName());
 			if (actor && actor->GetName().StartsWith("BP_FirstPersonCharacter"))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("We found the character!"));
+				//UE_LOG(LogTemp, Warning, TEXT("We found the character!"));
 				bpFirstPerson = actor;
 			}
 		}
@@ -67,8 +67,8 @@ void AShark::Tick(float DeltaTime)
 		FVector toPlayer = (playerLocation - currentLocation).GetSafeNormal();
 
 		// Log
-		UE_LOG(LogTemp, Warning, TEXT("BP_FirstPerson location: (%f, %f, %f)"), playerLocation.X, playerLocation.Y, playerLocation.Z);
-		UE_LOG(LogTemp, Warning, TEXT("Shark location: (%f, %f, %f)"), currentLocation.X, currentLocation.Y, currentLocation.Z);
+		//UE_LOG(LogTemp, Warning, TEXT("BP_FirstPerson location: (%f, %f, %f)"), playerLocation.X, playerLocation.Y, playerLocation.Z);
+		//UE_LOG(LogTemp, Warning, TEXT("Shark location: (%f, %f, %f)"), currentLocation.X, currentLocation.Y, currentLocation.Z);
 
 		// Movement
 		if (!toPlayer.IsNearlyZero())
