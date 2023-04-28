@@ -6,17 +6,18 @@
 // Sets default values
 AShark::AShark()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	VisualMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	VisualMesh->SetupAttachment(RootComponent);
-	
+
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SharkVisualAsset(TEXT("/Game/Models/Shark/shark"));
 
-	if (SharkVisualAsset.Succeeded()) 
+	if (SharkVisualAsset.Succeeded())
 	{
 		VisualMesh->SetSkeletalMesh(SharkVisualAsset.Object);
 		VisualMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+		VisualMesh->OnComponentHit.AddDynamic(this, &AShark::OnHit);
 	}
 }
 
@@ -41,7 +42,7 @@ void AShark::BeginPlay()
 			}
 		}
 	}
-	
+
 }
 
 // Called every frame
@@ -60,7 +61,7 @@ void AShark::Tick(float DeltaTime)
 		// Force calcs
 		const float ForceMag = 1000000;
 		FVector Force = ForceMag * ToPlayer;
-		FVector ForceOffset(0,0,0);
+		FVector ForceOffset(0, 0, 0);
 
 		const FName HeadBoneName = "jaw_master";
 
@@ -76,3 +77,7 @@ void AShark::Tick(float DeltaTime)
 	}
 }
 
+void AShark::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
+	FName HitActorName = OtherActor->GetFName();
+	UE_LOG(LogTemp, Warning, TEXT("We hit '%s'"), *HitActorName.ToString());
+}
