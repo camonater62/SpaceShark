@@ -17,6 +17,7 @@ AShark::AShark()
 	{
 		VisualMesh->SetSkeletalMesh(SharkVisualAsset.Object);
 		VisualMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+		VisualMesh->OnComponentHit.AddDynamic(this, &AShark::OnHit);
 	}
 }
 
@@ -76,3 +77,7 @@ void AShark::Tick(float DeltaTime)
 	}
 }
 
+void AShark::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
+	FName HitActorName = OtherActor->GetFName();
+	UE_LOG(LogTemp, Warning, TEXT("We hit '%s'"), *HitActorName.ToString());
+}
