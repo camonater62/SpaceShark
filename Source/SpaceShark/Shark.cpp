@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Shark.h"
 
 // Sets default values
@@ -27,22 +26,22 @@ void AShark::BeginPlay()
 	Super::BeginPlay();
 
 	// Get a reference to the current level
-	ULevel* currentLevel = GetWorld()->GetCurrentLevel();
+	ULevel *currentLevel = GetWorld()->GetCurrentLevel();
 
 	// Iterate through all the Actors in the level and print their names
 	// Find the Actor with the name "BP_FirstPerson"
-	for (AActor* actor : currentLevel->Actors)
+	for (AActor *actor : currentLevel->Actors)
 	{
-		if (actor) {
-			//UE_LOG(LogTemp, Warning, TEXT("Actor Name: %s"), *actor->GetName());
+		if (actor)
+		{
+			// UE_LOG(LogTemp, Warning, TEXT("Actor Name: %s"), *actor->GetName());
 			if (actor && actor->GetName().StartsWith("BP_FirstPersonCharacter"))
 			{
-				//UE_LOG(LogTemp, Warning, TEXT("We found the character!"));
+				// UE_LOG(LogTemp, Warning, TEXT("We found the character!"));
 				BPFirstPerson = actor;
 			}
 		}
 	}
-
 }
 
 // Called every frame
@@ -66,7 +65,8 @@ void AShark::Tick(float DeltaTime)
 		const FName HeadBoneName = "jaw_master";
 
 		int32 HeadBoneIndex = VisualMesh->GetBoneIndex(HeadBoneName);
-		if (HeadBoneIndex != INDEX_NONE) {
+		if (HeadBoneIndex != INDEX_NONE)
+		{
 			ForceOffset = VisualMesh->GetBoneLocation(HeadBoneName);
 		}
 
@@ -77,7 +77,14 @@ void AShark::Tick(float DeltaTime)
 	}
 }
 
-void AShark::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
+float AShark::TakeDamage(float Damage, struct FDamageEvent const &DamageEvent, AController *EventInstigator, AActor *DamageCauser)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Shark took damage!"));
+	return 0;
+}
+
+void AShark::OnHit(UPrimitiveComponent *HitComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, FVector NormalImpulse, const FHitResult &Hit)
+{
 	FName HitActorName = OtherActor->GetFName();
 	UE_LOG(LogTemp, Warning, TEXT("We hit '%s'"), *HitActorName.ToString());
 }
