@@ -11,7 +11,7 @@ AAsteroid::AAsteroid()
 	VisualMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	SetRootComponent(VisualMesh);
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> AsteroidVisualAsset(TEXT("/Game/Models/Planets/SM_Asteroid"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> AsteroidVisualAsset(TEXT("/Game/Models/Planets/SM_Asteroid_New"));
 
 	if (AsteroidVisualAsset.Succeeded())
 	{
