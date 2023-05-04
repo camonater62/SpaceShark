@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Shark.h"
+#include "Engine/EngineTypes.h"
+#include "Engine/DamageEvents.h"
 
 // Sets default values
 AShark::AShark()
@@ -16,7 +18,6 @@ AShark::AShark()
 	{
 		VisualMesh->SetSkeletalMesh(SharkVisualAsset.Object);
 		VisualMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-		VisualMesh->OnComponentHit.AddDynamic(this, &AShark::OnHit);
 	}
 }
 
@@ -42,6 +43,8 @@ void AShark::BeginPlay()
 			}
 		}
 	}
+
+	VisualMesh->OnComponentHit.AddDynamic(this, &AShark::OnHit);
 }
 
 // Called every frame
@@ -79,12 +82,40 @@ void AShark::Tick(float DeltaTime)
 
 float AShark::TakeDamage(float Damage, struct FDamageEvent const &DamageEvent, AController *EventInstigator, AActor *DamageCauser)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Shark took damage!"));
-	return 0;
+	if (Health <= 0)
+		return 0;
+
+	float DamageCaused = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	DamageCaused = FMath::Min(Health, DamageCaused);
+	Health -= DamageCaused;
+
+	UE_LOG(LogTemp, Warning, TEXT("Health left: %f"), Health);
+
+	if (Health <= 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Shark is dead!"));
+		Destroy();
+	}
+
+	return DamageCaused;
 }
 
 void AShark::OnHit(UPrimitiveComponent *HitComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, FVector NormalImpulse, const FHitResult &Hit)
 {
 	FName HitActorName = OtherActor->GetFName();
 	UE_LOG(LogTemp, Warning, TEXT("We hit '%s'"), *HitActorName.ToString());
+	FPointDamageEvent DamageEvent(10.0f, Hit, NormalImpulse, nullptr);
+	if (HitActorName.ToString().StartsWith("BP_FirstPersonCharacter"))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("We hit the player!"));
+		float dealt = OtherActor->TakeDamage(10.0f, DamageEvent, nullptr, OtherActor);
+		UE_LOG(LogTemp, Warning, TEXT("We dealt %f damage"), dealt);
+	}
+	else if (HitActorName.ToString().StartsWith("BP_FirstPersonProjectile"))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("We got hit by a projectile!"));
+		TakeDamage(10.0f, DamageEvent, nullptr, OtherActor);
+		OtherActor->Destroy();
+	}
 }

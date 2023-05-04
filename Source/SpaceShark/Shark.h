@@ -10,8 +10,8 @@ UCLASS()
 class SPACESHARK_API AShark : public AActor
 {
 	GENERATED_BODY()
-		UPROPERTY(VisibleAnywhere)
-		USkeletalMeshComponent* VisualMesh;
+	UPROPERTY(VisibleAnywhere)
+	USkeletalMeshComponent *VisualMesh;
 
 public:
 	// Sets default values for this actor's properties
@@ -25,12 +25,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual float TakeDamage(float Damage, struct FDamageEvent const &DamageEvent, AController *EventInstigator, AActor *DamageCauser) override;
 
 	UFUNCTION()
-		void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	void OnHit(UPrimitiveComponent *HitComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, FVector NormalImpulse, const FHitResult &Hit);
+
+	UPROPERTY(EditAnywhere)
+	float Health = 100;
 
 private:
-	AActor* BPFirstPerson;
-
+	AActor *BPFirstPerson;
 };
