@@ -44,12 +44,21 @@ void AShark::BeginPlay()
 		}
 	}
 
-	// Add a capsule collision shape to every bone
-	for (FName BoneName : VisualMesh->GetAllSocketNames())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Bone name: %s"), *BoneName.ToString());
-		VisualMesh->AddCapsuleIndirect(10, 10, 10, 10, BoneName);
-	}
+	// TArray<FName> BoneNames;
+	// VisualMesh->GetBoneNames(BoneNames);
+	// for (FName BoneName : BoneNames)
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("Bone Name: %s"), *BoneName.ToString());
+	// 	int32 BoneIndex = VisualMesh->GetBoneIndex(BoneName);
+	// 	FTransform BoneTransform = VisualMesh->GetBoneTransform(BoneIndex);
+
+	// 	FCollisionShape CapsuleShape = FCollisionShape::MakeCapsule(10.0f, 96.0f);
+	// 	FTransform CapsuleTransform = BoneTransform;
+	// 	CapsuleTransform.SetLocation(FVector::ZeroVector);
+	// 	CapsuleTransform.SetScale3D(FVector::OneVector);
+	// 	VisualMesh
+	// }
+
 
 	// Add a hit event
 	VisualMesh->OnComponentHit.AddDynamic(this, &AShark::OnHit);
