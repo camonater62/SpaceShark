@@ -59,7 +59,6 @@ void AShark::BeginPlay()
 	// 	VisualMesh
 	// }
 
-
 	// Add a hit event
 	VisualMesh->OnComponentHit.AddDynamic(this, &AShark::OnHit);
 }
@@ -78,7 +77,7 @@ void AShark::Tick(float DeltaTime)
 		FVector ToPlayer = (PlayerLocation - CurrentLocation).GetSafeNormal();
 
 		// Force calcs
-		const float ForceMag = 1000000;
+		const float ForceMag = 5000000;
 		FVector Force = ForceMag * ToPlayer;
 		FVector ForceOffset(0, 0, 0);
 
