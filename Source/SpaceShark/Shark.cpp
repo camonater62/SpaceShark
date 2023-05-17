@@ -105,7 +105,7 @@ void AShark::Tick(float DeltaTime)
 		}
 		else if (AttackTimer < 0)
 		{
-			SetActorLocation(CurrentLocation, false, nullptr, ETeleportType::ResetPhysics);
+			VisualMesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
 
 			// Force calcs
 			const float ForceMag = 100000;
@@ -122,15 +122,15 @@ void AShark::Tick(float DeltaTime)
 
 			VisualMesh->AddForceAtLocation(ToPlayer * ForceMag, ForceOffset);
 
-			if (AttackTimer < -0.25)
+			if (AttackTimer < -0.15)
 			{
 				AttackTimer = AttackCooldown;
 			}
 		}
-		else if (CurrentVelocity.Length() > 1000000)
+		else if (CurrentVelocity.Length() > 10000)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Shark is moving too fast!"));
-			SetActorLocation(CurrentLocation, false, nullptr, ETeleportType::ResetPhysics);
+			VisualMesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
 		}
 		else
 		{
