@@ -35,4 +35,8 @@ public:
 
 private:
 	AActor *BPFirstPerson;
+	float AttackTimer;
+	float AttackCooldown;
+	float DamageTimer;
+	float DamageCooldown;
 };

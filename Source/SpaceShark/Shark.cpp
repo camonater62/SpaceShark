@@ -61,6 +61,12 @@ void AShark::BeginPlay()
 
 	// Add a hit event
 	VisualMesh->OnComponentHit.AddDynamic(this, &AShark::OnHit);
+
+	AttackCooldown = 3;
+	AttackTimer = AttackCooldown;
+
+	DamageCooldown = 1;
+	DamageTimer = DamageCooldown;
 }
 
 // Called every frame
@@ -68,28 +74,75 @@ void AShark::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	AttackTimer -= DeltaTime;
+	DamageTimer -= DeltaTime;
+
 	// Check if the Actor was found
 	if (BPFirstPerson != nullptr && VisualMesh != nullptr)
 	{
 		// Pos
 		FVector PlayerLocation = BPFirstPerson->GetActorLocation();
 		FVector CurrentLocation = GetActorLocation();
-		FVector ToPlayer = (PlayerLocation - CurrentLocation).GetSafeNormal();
+		FVector ToPlayer = PlayerLocation - CurrentLocation;
+		FVector ToPlayerNormal = ToPlayer.GetSafeNormal();
 
-		// Force calcs
-		const float ForceMag = 5000000;
-		FVector Force = ForceMag * ToPlayer;
-		FVector ForceOffset(0, 0, 0);
-
-		const FName HeadBoneName = "jaw_master";
-
-		int32 HeadBoneIndex = VisualMesh->GetBoneIndex(HeadBoneName);
-		if (HeadBoneIndex != INDEX_NONE)
+		double Distance = FVector::Dist(PlayerLocation, CurrentLocation);
+		if (Distance < 500 && DamageTimer < 0)
 		{
-			ForceOffset = VisualMesh->GetBoneLocation(HeadBoneName);
+			UE_LOG(LogTemp, Warning, TEXT("We hit the player!"));
+			float dealt = BPFirstPerson->TakeDamage(10, FDamageEvent(), nullptr, this);
+			UE_LOG(LogTemp, Warning, TEXT("We dealt %f damage"), dealt);
+			DamageTimer = DamageCooldown;
 		}
 
-		VisualMesh->AddForceAtLocation(ToPlayer * ForceMag, ForceOffset);
+		if (Distance > 100000)
+		{
+			FVector NewLocation = PlayerLocation - 1000 * ToPlayerNormal;
+			SetActorLocation(NewLocation, false, nullptr, ETeleportType::TeleportPhysics);
+
+			UE_LOG(LogTemp, Warning, TEXT("Teleporting shark! %d"), Distance);
+		}
+		else if (AttackTimer < 0)
+		{
+			SetActorLocation(CurrentLocation, false, nullptr, ETeleportType::ResetPhysics);
+
+			// Force calcs
+			const float ForceMag = 100000;
+			FVector Force = ForceMag * ToPlayer;
+			FVector ForceOffset(0, 0, 0);
+
+			const FName HeadBoneName = "jaw_master";
+
+			int32 HeadBoneIndex = VisualMesh->GetBoneIndex(HeadBoneName);
+			if (HeadBoneIndex != INDEX_NONE)
+			{
+				ForceOffset = VisualMesh->GetBoneLocation(HeadBoneName);
+			}
+
+			VisualMesh->AddForceAtLocation(ToPlayer * ForceMag, ForceOffset);
+
+			if (AttackTimer < -0.25)
+			{
+				AttackTimer = AttackCooldown;
+			}
+		}
+		else
+		{
+			// Force calcs
+			const float ForceMag = 10000;
+			FVector Force = ForceMag * ToPlayer;
+			FVector ForceOffset(0, 0, 0);
+
+			const FName HeadBoneName = "jaw_master";
+
+			int32 HeadBoneIndex = VisualMesh->GetBoneIndex(HeadBoneName);
+			if (HeadBoneIndex != INDEX_NONE)
+			{
+				ForceOffset = VisualMesh->GetBoneLocation(HeadBoneName);
+			}
+
+			VisualMesh->AddForceAtLocation(ToPlayer * ForceMag, ForceOffset);
+		}
 
 		// Log
 		// UE_LOG(LogTemp, Warning, TEXT("BP_FirstPerson location: %s, Shark location: %s"), *PlayerLocation.ToString(), *CurrentLocation.ToString());
@@ -122,13 +175,14 @@ void AShark::OnHit(UPrimitiveComponent *HitComponent, AActor *OtherActor, UPrimi
 	FName HitActorName = OtherActor->GetFName();
 	UE_LOG(LogTemp, Warning, TEXT("We hit '%s'"), *HitActorName.ToString());
 	FPointDamageEvent DamageEvent(10.0f, Hit, NormalImpulse, nullptr);
-	if (HitActorName.ToString().StartsWith("BP_FirstPersonCharacter"))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("We hit the player!"));
-		float dealt = OtherActor->TakeDamage(10.0f, DamageEvent, nullptr, OtherActor);
-		UE_LOG(LogTemp, Warning, TEXT("We dealt %f damage"), dealt);
-	}
-	else if (HitActorName.ToString().StartsWith("BP_FirstPersonProjectile"))
+	// if (HitActorName.ToString().StartsWith("BP_FirstPersonCharacter"))
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("We hit the player!"));
+	// 	float dealt = OtherActor->TakeDamage(10.0f, DamageEvent, nullptr, OtherActor);
+	// 	UE_LOG(LogTemp, Warning, TEXT("We dealt %f damage"), dealt);
+	// }
+	// else
+	if (HitActorName.ToString().StartsWith("BP_FirstPersonProjectile"))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("We got hit by a projectile!"));
 		TakeDamage(10.0f, DamageEvent, nullptr, OtherActor);
