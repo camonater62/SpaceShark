@@ -85,6 +85,7 @@ void AShark::Tick(float DeltaTime)
 		FVector CurrentLocation = GetActorLocation();
 		FVector ToPlayer = PlayerLocation - CurrentLocation;
 		FVector ToPlayerNormal = ToPlayer.GetSafeNormal();
+		FVector CurrentVelocity = VisualMesh->GetPhysicsLinearVelocity();
 
 		double Distance = FVector::Dist(PlayerLocation, CurrentLocation);
 		if (Distance < 500 && DamageTimer < 0)
@@ -125,6 +126,11 @@ void AShark::Tick(float DeltaTime)
 			{
 				AttackTimer = AttackCooldown;
 			}
+		}
+		else if (CurrentVelocity.Length() > 1000000)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Shark is moving too fast!"));
+			SetActorLocation(CurrentLocation, false, nullptr, ETeleportType::ResetPhysics);
 		}
 		else
 		{
