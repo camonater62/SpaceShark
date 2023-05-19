@@ -19,6 +19,7 @@ AShark::AShark()
 		VisualMesh->SetSkeletalMesh(SharkVisualAsset.Object);
 		VisualMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 	}
+
 }
 
 // Called when the game starts or when spawned
@@ -171,6 +172,7 @@ float AShark::TakeDamage(float Damage, struct FDamageEvent const &DamageEvent, A
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Shark is dead!"));
 		Destroy();
+		UGameplayStatics::OpenLevel(GetWorld(), FName("WinScreen"));
 	}
 
 	return DamageCaused;

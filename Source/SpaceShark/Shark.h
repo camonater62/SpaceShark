@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Kismet/GameplayStatics.h"
 #include "Shark.generated.h"
 
 UCLASS()
@@ -32,6 +33,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Health = 100;
+
 
 private:
 	AActor *BPFirstPerson;
