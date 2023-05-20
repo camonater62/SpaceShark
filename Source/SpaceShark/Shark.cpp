@@ -19,7 +19,6 @@ AShark::AShark()
 		VisualMesh->SetSkeletalMesh(SharkVisualAsset.Object);
 		VisualMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 	}
-
 }
 
 // Called when the game starts or when spawned
@@ -44,21 +43,6 @@ void AShark::BeginPlay()
 			}
 		}
 	}
-
-	// TArray<FName> BoneNames;
-	// VisualMesh->GetBoneNames(BoneNames);
-	// for (FName BoneName : BoneNames)
-	// {
-	// 	UE_LOG(LogTemp, Warning, TEXT("Bone Name: %s"), *BoneName.ToString());
-	// 	int32 BoneIndex = VisualMesh->GetBoneIndex(BoneName);
-	// 	FTransform BoneTransform = VisualMesh->GetBoneTransform(BoneIndex);
-
-	// 	FCollisionShape CapsuleShape = FCollisionShape::MakeCapsule(10.0f, 96.0f);
-	// 	FTransform CapsuleTransform = BoneTransform;
-	// 	CapsuleTransform.SetLocation(FVector::ZeroVector);
-	// 	CapsuleTransform.SetScale3D(FVector::OneVector);
-	// 	VisualMesh
-	// }
 
 	// Add a hit event
 	VisualMesh->OnComponentHit.AddDynamic(this, &AShark::OnHit);

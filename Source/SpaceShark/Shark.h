@@ -34,10 +34,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Health = 100;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float AttackTimer;
 
 private:
 	AActor *BPFirstPerson;
-	float AttackTimer;
 	float AttackCooldown;
 	float DamageTimer;
 	float DamageCooldown;
