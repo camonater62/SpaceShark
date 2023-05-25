@@ -22,6 +22,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	const float ATTACK_DAMAGE = 10;
+	const float ATTACK_RANGE = 100;
+	const float ATTACK_COOLDOWN = 3;
+	const float DAMAGE_COOLDOWN = 1;
+	const float MAX_HEALTH = 100;
+	const float MOVEMENT_SPEED = 10000;
+	const float MAX_DISTANCE = 100000;
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -32,14 +40,12 @@ public:
 	void OnHit(UPrimitiveComponent *HitComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, FVector NormalImpulse, const FHitResult &Hit);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Health = 100;
+	float Health = MAX_HEALTH;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AttackTimer;
 
 private:
 	AActor *BPFirstPerson;
-	float AttackCooldown;
 	float DamageTimer;
-	float DamageCooldown;
 };

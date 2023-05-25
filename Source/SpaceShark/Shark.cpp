@@ -47,11 +47,7 @@ void AShark::BeginPlay()
 	// Add a hit event
 	VisualMesh->OnComponentHit.AddDynamic(this, &AShark::OnHit);
 
-	AttackCooldown = 3;
-	AttackTimer = AttackCooldown;
-
-	DamageCooldown = 1;
-	DamageTimer = DamageCooldown;
+	AttackTimer = 2 * ATTACK_COOLDOWN;
 }
 
 // Called every frame
@@ -73,17 +69,22 @@ void AShark::Tick(float DeltaTime)
 		FVector CurrentVelocity = VisualMesh->GetPhysicsLinearVelocity();
 
 		double Distance = FVector::Dist(PlayerLocation, CurrentLocation);
+		if (AttackTimer > ATTACK_COOLDOWN)
+		{
+			// Do nothing
+			// This gives the player some time to react when the game starts
+		}
 		if (Distance < 500 && DamageTimer < 0)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("We hit the player!"));
 			float dealt = BPFirstPerson->TakeDamage(10, FDamageEvent(), nullptr, this);
 			UE_LOG(LogTemp, Warning, TEXT("We dealt %f damage"), dealt);
-			DamageTimer = DamageCooldown;
+			DamageTimer = DAMAGE_COOLDOWN;
 		}
 
-		if (Distance > 100000)
+		if (Distance > MAX_DISTANCE)
 		{
-			FVector NewLocation = PlayerLocation - 1000 * ToPlayerNormal;
+			FVector NewLocation = PlayerLocation - 0.85f * MAX_DISTANCE * ToPlayerNormal;
 			SetActorLocation(NewLocation, false, nullptr, ETeleportType::TeleportPhysics);
 
 			UE_LOG(LogTemp, Warning, TEXT("Teleporting shark! %d"), Distance);
@@ -93,8 +94,8 @@ void AShark::Tick(float DeltaTime)
 			VisualMesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
 
 			// Force calcs
-			const float ForceMag = 100000;
-			FVector Force = ForceMag * ToPlayer;
+			const float ForceMag = 25000 * MOVEMENT_SPEED;
+			FVector Force = ForceMag * ToPlayerNormal;
 			FVector ForceOffset(0, 0, 0);
 
 			const FName HeadBoneName = "jaw_master";
@@ -105,23 +106,24 @@ void AShark::Tick(float DeltaTime)
 				ForceOffset = VisualMesh->GetBoneLocation(HeadBoneName);
 			}
 
-			VisualMesh->AddForceAtLocation(ToPlayer * ForceMag, ForceOffset);
+			VisualMesh->AddForceAtLocation(Force, ForceOffset);
 
-			if (AttackTimer < -0.15)
+			if (AttackTimer < -0.25)
 			{
-				AttackTimer = AttackCooldown;
+				AttackTimer = ATTACK_COOLDOWN;
 			}
 		}
-		else if (CurrentVelocity.Length() > 10000)
+		else if (CurrentVelocity.Length() > MOVEMENT_SPEED)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Shark is moving too fast!"));
 			VisualMesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
 		}
 		else
 		{
+			// Default state
+
 			// Force calcs
-			const float ForceMag = 10000;
-			FVector Force = ForceMag * ToPlayer;
+			FVector Force = MOVEMENT_SPEED * 500 * ToPlayerNormal;
 			FVector ForceOffset(0, 0, 0);
 
 			const FName HeadBoneName = "jaw_master";
@@ -132,11 +134,8 @@ void AShark::Tick(float DeltaTime)
 				ForceOffset = VisualMesh->GetBoneLocation(HeadBoneName);
 			}
 
-			VisualMesh->AddForceAtLocation(ToPlayer * ForceMag, ForceOffset);
+			VisualMesh->AddForceAtLocation(Force, ForceOffset);
 		}
-
-		// Log
-		// UE_LOG(LogTemp, Warning, TEXT("BP_FirstPerson location: %s, Shark location: %s"), *PlayerLocation.ToString(), *CurrentLocation.ToString());
 	}
 }
 
@@ -167,13 +166,7 @@ void AShark::OnHit(UPrimitiveComponent *HitComponent, AActor *OtherActor, UPrimi
 	FName HitActorName = OtherActor->GetFName();
 	UE_LOG(LogTemp, Warning, TEXT("We hit '%s'"), *HitActorName.ToString());
 	FPointDamageEvent DamageEvent(10.0f, Hit, NormalImpulse, nullptr);
-	// if (HitActorName.ToString().StartsWith("BP_FirstPersonCharacter"))
-	// {
-	// 	UE_LOG(LogTemp, Warning, TEXT("We hit the player!"));
-	// 	float dealt = OtherActor->TakeDamage(10.0f, DamageEvent, nullptr, OtherActor);
-	// 	UE_LOG(LogTemp, Warning, TEXT("We dealt %f damage"), dealt);
-	// }
-	// else
+
 	if (HitActorName.ToString().StartsWith("BP_FirstPersonProjectile"))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("We got hit by a projectile!"));
