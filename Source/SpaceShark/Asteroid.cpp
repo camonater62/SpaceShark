@@ -17,6 +17,9 @@ AAsteroid::AAsteroid()
 	{
 		VisualMesh->SetStaticMesh(AsteroidVisualAsset.Object);
 		VisualMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+		VisualMesh->Mobility = EComponentMobility::Movable;
+		VisualMesh->AttachToComponent(this->GetRootComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		VisualMesh->SetSimulatePhysics(true);
 	}
 }
 

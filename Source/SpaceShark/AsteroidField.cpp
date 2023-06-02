@@ -25,6 +25,9 @@ void UAsteroidField::BeginPlay()
 		FRotator random = FRotator(FMath::FRandRange(0, 360), FMath::FRandRange(0, 360), FMath::FRandRange(0, 360));
 		AAsteroid *SpawnedAsteroid = (AAsteroid *)GetWorld()->SpawnActor(AAsteroid::StaticClass(), &location, &random);
 		SpawnedAsteroid->SetActorScale3D(FVector(FMath::FRandRange(0.5f, 5.0f)));
+#if WITH_EDITOR
+		SpawnedAsteroid->SetFolderPath("/SpawnedActors/Asteroids");
+#endif
 	}
 	// ...
 }
