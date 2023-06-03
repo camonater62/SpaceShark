@@ -153,9 +153,22 @@ float AShark::TakeDamage(float Damage, struct FDamageEvent const &DamageEvent, A
 
 	if (Health <= 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Shark is dead!"));
-		Destroy();
-		UGameplayStatics::OpenLevel(GetWorld(), FName("WinScreen"));
+		if (Stage >= 2)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Shark is dead!"));
+			Destroy();
+			UGameplayStatics::OpenLevel(GetWorld(), FName("WinScreen"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Shark is dead!"));
+			Stage++;
+			Health = MAX_HEALTH;
+			// Spawn a new shark
+			AShark *NewShark = GetWorld()->SpawnActor<AShark>(AShark::StaticClass(), GetActorLocation(), GetActorRotation());
+			NewShark->SetActorScale3D(GetActorScale3D());
+			NewShark->Stage = Stage;
+		}
 	}
 
 	return DamageCaused;
