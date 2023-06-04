@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "AsteroidField.h"
-#include "Asteroid.h"
 
 // Sets default values for this component's properties
 UAsteroidField::UAsteroidField()
@@ -23,11 +22,24 @@ void UAsteroidField::BeginPlay()
 	{
 		FVector location = FVector(FMath::FRandRange(lowerBounds.X, upperBounds.X), FMath::FRandRange(lowerBounds.Y, upperBounds.Y), FMath::FRandRange(lowerBounds.Z, upperBounds.Z));
 		FRotator random = FRotator(FMath::FRandRange(0, 360), FMath::FRandRange(0, 360), FMath::FRandRange(0, 360));
-		AAsteroid *SpawnedAsteroid = (AAsteroid *)GetWorld()->SpawnActor(AAsteroid::StaticClass(), &location, &random);
-		SpawnedAsteroid->SetActorScale3D(FVector(FMath::FRandRange(0.5f, 5.0f)));
+		float chance = FMath::FRand();
+		if (chance < 0.95)
+		{
+			AAsteroid* SpawnedAsteroid = (AAsteroid*)GetWorld()->SpawnActor(AAsteroid::StaticClass(), &location, &random);
+			SpawnedAsteroid->SetActorScale3D(FVector(FMath::FRandRange(0.5f, 5.0f)));
 #if WITH_EDITOR
-		SpawnedAsteroid->SetFolderPath("/SpawnedActors/Asteroids");
+			SpawnedAsteroid->SetFolderPath("/SpawnedActors/Asteroids");
 #endif
+		}
+		else
+		{
+			ASolarPanel* SpawnedSolarPanel = (ASolarPanel*)GetWorld()->SpawnActor(ASolarPanel::StaticClass(), &location, &random);
+			//SpawnedSolarPanel->SetActorScale3D(FVector(FMath::FRandRange(0.5f, 5.0f)));
+#if WITH_EDITOR
+			SpawnedSolarPanel->SetFolderPath("/SpawnedActors/SolarPanels");
+#endif
+		}
+
 	}
 	// ...
 }

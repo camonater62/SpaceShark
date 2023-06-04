@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Asteroid.h"
+#include "SolarPanel.h"
 #include "Components/SceneComponent.h"
 #include "AsteroidField.generated.h"
 
