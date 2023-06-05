@@ -12,24 +12,24 @@ AAsteroid::AAsteroid()
 	SetRootComponent(VisualMesh);
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> AsteroidVisualAsset(TEXT("/Game/Models/Planets/SM_Asteroid_New"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> AsteroidVisualAsset2(TEXT("/Game/Models/Planets/SM_Asteroid2"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SolarPanelVisualAsset(TEXT("/Game/Models/Debris/SM_SolarPanel"));
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> PlanetVisualAsset(TEXT("/Game/Models/Planets/SM_Planet"));
 	
 	float chance = FMath::FRand();
 
-	if (AsteroidVisualAsset.Succeeded() && SolarPanelVisualAsset.Succeeded() && PlanetVisualAsset.Succeeded())
+	if (AsteroidVisualAsset.Succeeded() && SolarPanelVisualAsset.Succeeded() && AsteroidVisualAsset2.Succeeded())
 	{
-		if (chance < 0.8)
+		if (chance < 0.425)
 		{
 			VisualMesh->SetStaticMesh(AsteroidVisualAsset.Object);
 		}
-		else if (chance < 0.95)
+		else if (chance < 0.85)
 		{
-			VisualMesh->SetStaticMesh(SolarPanelVisualAsset.Object);
+			VisualMesh->SetStaticMesh(AsteroidVisualAsset2.Object);
 		}
 		else
 		{
-			VisualMesh->SetStaticMesh(PlanetVisualAsset.Object);
+			VisualMesh->SetStaticMesh(SolarPanelVisualAsset.Object);
 		}
 		VisualMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 		VisualMesh->Mobility = EComponentMobility::Movable;
