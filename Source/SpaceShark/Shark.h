@@ -5,8 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Shark.generated.h"
 
+class UNiagaraSystem;
 UCLASS()
 class SPACESHARK_API AShark : public AActor
 {
@@ -26,7 +29,7 @@ protected:
 	const float ATTACK_RANGE = 100;
 	const float ATTACK_COOLDOWN = 3;
 	const float DAMAGE_COOLDOWN = 1;
-	float MAX_HEALTH = 80;
+	float MAX_HEALTH = 10;
 	const float MOVEMENT_SPEED = 10000;
 	const float MAX_DISTANCE = 100000;
 
@@ -34,6 +37,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable, Category="Shark")
 	virtual float TakeDamage(float Damage, struct FDamageEvent const &DamageEvent, AController *EventInstigator, AActor *DamageCauser) override;
 
 	UFUNCTION()
@@ -47,6 +51,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int Stage;
+
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	UNiagaraSystem* Blood;
+
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	UNiagaraSystem* Explosion;
+	UNiagaraComponent* ExplosionComp;
 
 private:
 	AActor *BPFirstPerson;

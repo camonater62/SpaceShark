@@ -19,7 +19,8 @@ AShark::AShark()
 		VisualMesh->SetSkeletalMesh(SharkVisualAsset.Object);
 		VisualMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 	}
-
+	ExplosionComp = UNiagaraFunctionLibrary::SpawnSystemAttached(Explosion, VisualMesh, NAME_None, FVector(0.f), FRotator(0.f), EAttachLocation::KeepRelativeOffset, true);
+	ExplosionComp->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
 	Stage = 0;
 }
 
@@ -167,6 +168,7 @@ float AShark::TakeDamage(float Damage, struct FDamageEvent const &DamageEvent, A
 		if (Stage >= 2)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Shark is dead!"));
+			ExplosionComp->Activate();
 			Destroy();
 			if (GetNumberOfSharksInLevel() == 0)
 			{
