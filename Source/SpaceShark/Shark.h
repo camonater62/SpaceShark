@@ -26,7 +26,7 @@ protected:
 	const float ATTACK_RANGE = 100;
 	const float ATTACK_COOLDOWN = 3;
 	const float DAMAGE_COOLDOWN = 1;
-	const float MAX_HEALTH = 100;
+	float MAX_HEALTH = 80;
 	const float MOVEMENT_SPEED = 10000;
 	const float MAX_DISTANCE = 100000;
 
@@ -45,7 +45,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AttackTimer;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int Stage;
+
 private:
 	AActor *BPFirstPerson;
 	float DamageTimer;
+
+	int GetNumberOfSharksInLevel();
 };

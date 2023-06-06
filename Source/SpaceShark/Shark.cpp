@@ -19,6 +19,8 @@ AShark::AShark()
 		VisualMesh->SetSkeletalMesh(SharkVisualAsset.Object);
 		VisualMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 	}
+
+	Stage = 0;
 }
 
 // Called when the game starts or when spawned
@@ -44,6 +46,13 @@ void AShark::BeginPlay()
 		}
 	}
 
+	// Enable physics on everything
+	SetActorScale3D(FVector(100));
+	VisualMesh->SetAllBodiesSimulatePhysics(true);
+	VisualMesh->SetSimulatePhysics(true);
+	VisualMesh->SetEnableGravity(true);
+	VisualMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
 	// Add a hit event
 	VisualMesh->OnComponentHit.AddDynamic(this, &AShark::OnHit);
 
@@ -67,6 +76,7 @@ void AShark::Tick(float DeltaTime)
 		FVector ToPlayer = PlayerLocation - CurrentLocation;
 		FVector ToPlayerNormal = ToPlayer.GetSafeNormal();
 		FVector CurrentVelocity = VisualMesh->GetPhysicsLinearVelocity();
+		FVector CurrentAngularVelocity = VisualMesh->GetPhysicsAngularVelocityInDegrees();
 
 		double Distance = FVector::Dist(PlayerLocation, CurrentLocation);
 		if (AttackTimer > ATTACK_COOLDOWN)
@@ -113,10 +123,11 @@ void AShark::Tick(float DeltaTime)
 				AttackTimer = ATTACK_COOLDOWN;
 			}
 		}
-		else if (CurrentVelocity.Length() > MOVEMENT_SPEED)
+		else if (CurrentVelocity.Length() > MOVEMENT_SPEED || 10 * CurrentAngularVelocity.Length() > MOVEMENT_SPEED)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Shark is moving too fast!"));
 			VisualMesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
+			VisualMesh->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
 		}
 		else
 		{
@@ -153,9 +164,30 @@ float AShark::TakeDamage(float Damage, struct FDamageEvent const &DamageEvent, A
 
 	if (Health <= 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Shark is dead!"));
-		Destroy();
-		UGameplayStatics::OpenLevel(GetWorld(), FName("WinScreen"));
+		if (Stage >= 2)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Shark is dead!"));
+			Destroy();
+			if (GetNumberOfSharksInLevel() == 0)
+			{
+				UGameplayStatics::OpenLevel(GetWorld(), FName("WinScreen"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Shark is dead!"));
+			Stage++;
+
+			// Spawn a new shark
+			FVector NewLocation = GetActorLocation() + FVector(0, 0, 100);
+			AShark *NewShark = GetWorld()->SpawnActor<AShark>(AShark::StaticClass(), NewLocation, GetActorRotation());
+			NewShark->SetActorScale3D(GetActorScale3D());
+			NewShark->Stage = Stage;
+			MAX_HEALTH /= 2;
+			NewShark->MAX_HEALTH = MAX_HEALTH;
+			NewShark->Health = MAX_HEALTH;
+			Health = MAX_HEALTH;
+		}
 	}
 
 	return DamageCaused;
@@ -173,4 +205,12 @@ void AShark::OnHit(UPrimitiveComponent *HitComponent, AActor *OtherActor, UPrimi
 		TakeDamage(10.0f, DamageEvent, nullptr, OtherActor);
 		OtherActor->Destroy();
 	}
+}
+
+int AShark::GetNumberOfSharksInLevel()
+{
+	ULevel *Level = GetWorld()->GetCurrentLevel();
+	TArray<AActor *> Actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShark::StaticClass(), Actors);
+	return Actors.Num();
 }
