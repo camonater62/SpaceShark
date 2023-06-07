@@ -164,6 +164,7 @@ float AShark::TakeDamage(float Damage, struct FDamageEvent const &DamageEvent, A
 
 	if (Health <= 0)
 	{
+		BPFirstPerson->TakeDamage(-10, FDamageEvent(), nullptr, this);
 		if (Stage >= 2)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Shark is dead!"));
