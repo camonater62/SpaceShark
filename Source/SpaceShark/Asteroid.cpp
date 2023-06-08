@@ -30,8 +30,16 @@ AAsteroid::AAsteroid()
 		{
 			VisualMesh->SetStaticMesh(SolarPanelVisualAsset.Object);
 		}
+		chance = FMath::FRand();
+		if (chance < 0.5)
+		{
+			VisualMesh->Mobility = EComponentMobility::Static;
+		}
+		else
+		{
+			VisualMesh->Mobility = EComponentMobility::Movable;
+		}
 		VisualMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-		VisualMesh->Mobility = EComponentMobility::Movable;
 		VisualMesh->SetSimulatePhysics(true);
 	}
 }
