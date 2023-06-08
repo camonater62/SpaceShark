@@ -30,15 +30,8 @@ AAsteroid::AAsteroid()
 		{
 			VisualMesh->SetStaticMesh(SolarPanelVisualAsset.Object);
 		}
-		chance = FMath::FRand();
-		if (chance < 0.5)
-		{
-			VisualMesh->Mobility = EComponentMobility::Static;
-		}
-		else
-		{
-			VisualMesh->Mobility = EComponentMobility::Movable;
-		}
+		VisualMesh->Mobility = EComponentMobility::Movable;
+		VisualMesh->SetCachedMaxDrawDistance(30000.0f);
 		VisualMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 		VisualMesh->SetSimulatePhysics(true);
 	}
@@ -53,13 +46,10 @@ void AAsteroid::BeginPlay()
 // Called every frame
 void AAsteroid::Tick(float DeltaTime)
 {
-	//Super::Tick(DeltaTime);
-	//FVector NewLocation = GetActorLocation();
+	Super::Tick(DeltaTime);
 	//FRotator NewRotation = GetActorRotation();
 	//float RunningTime = GetGameTimeSinceCreation();
-	//float DeltaHeight = FMath::Sin(RunningTime + DeltaTime) - FMath::Sin(RunningTime);
-	//NewLocation.Z += DeltaHeight * 20.0f;
-	//float DeltaRotation = DeltaTime * 20.0f;
+	//float DeltaRotation = DeltaTime * 10.0f;
 	//NewRotation.Yaw += DeltaRotation;
-	//SetActorLocationAndRotation(NewLocation, NewRotation);
+	//SetActorRotation(NewRotation);
 }
