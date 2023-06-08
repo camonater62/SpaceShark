@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Shark.generated.h"
 
 UCLASS()
@@ -13,6 +15,10 @@ class SPACESHARK_API AShark : public AActor
 	GENERATED_BODY()
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent *VisualMesh;
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* BloodComp;
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* ExplosionComp;
 
 public:
 	// Sets default values for this actor's properties

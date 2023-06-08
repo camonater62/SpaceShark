@@ -10,9 +10,15 @@ AShark::AShark()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	VisualMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
+	BloodComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Blood"));
+	ExplosionComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Explosion"));
 	VisualMesh->SetupAttachment(RootComponent);
+	BloodComp->SetupAttachment(RootComponent);
+	ExplosionComp->SetupAttachment(RootComponent);
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SharkVisualAsset(TEXT("/Game/Models/Shark/shark"));
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> BloodEffect(TEXT("/Game/Effects/Blood/P_BloodSplatter"));
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> ExplosionEffect(TEXT("/Game/Effects/Explosion/M_Explosion_Particles"));
 
 	if (SharkVisualAsset.Succeeded())
 	{
@@ -20,6 +26,11 @@ AShark::AShark()
 		VisualMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 	}
 
+	if (BloodEffect.Succeeded() && ExplosionEffect.Succeeded())
+	{
+		BloodComp->SetAsset(BloodEffect.Object);
+		ExplosionComp->SetAsset(ExplosionEffect.Object);
+	}
 	Stage = 0;
 }
 
@@ -162,12 +173,16 @@ float AShark::TakeDamage(float Damage, struct FDamageEvent const &DamageEvent, A
 
 	UE_LOG(LogTemp, Warning, TEXT("Health left: %f"), Health);
 
+	BloodComp->SetRelativeLocationAndRotation(RootComponent->GetComponentLocation(), RootComponent->GetComponentRotation());
+	BloodComp->ActivateSystem();
 	if (Health <= 0)
 	{
 		BPFirstPerson->TakeDamage(-20, FDamageEvent(), nullptr, this);
 		if (Stage >= 2)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Shark is dead!"));
+			ExplosionComp->SetRelativeLocationAndRotation(RootComponent->GetComponentLocation(), RootComponent->GetComponentRotation());
+			ExplosionComp->ActivateSystem();
 			Destroy();
 			if (GetNumberOfSharksInLevel() == 0)
 			{
