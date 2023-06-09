@@ -60,12 +60,13 @@ private:
 
 	int GetNumberOfSharksInLevel();
 	UPROPERTY(VisibleAnywhere)
-	UMaterial* Damaged1;
+	UTexture* Damaged1;
 	UPROPERTY(VisibleAnywhere)
-	UMaterial* Damaged2;
+	UTexture* Damaged2;
 	UPROPERTY(VisibleAnywhere)
-	UMaterial* Damaged3;
-	//UMaterialInstanceDynamic* DamagedDynamic1;
-	//UMaterialInstanceDynamic* DamagedDynamic2;
-	//UMaterialInstanceDynamic* DamagedDynamic3;
+	UTexture* Damaged3;
+	UTexture* SharkTexture;
+	UMaterialInterface* SharkMat;
+	UPROPERTY(VisibleAnywhere)
+	UMaterialInstanceDynamic* SharkDynamicMaterial;
 };

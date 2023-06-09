@@ -12,9 +12,7 @@ AShark::AShark()
 	VisualMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	BloodComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Blood"));
 	ExplosionComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Explosion"));
-	Damaged1 = CreateDefaultSubobject<UMaterial>(TEXT("Damaged1"));
-	Damaged2 = CreateDefaultSubobject<UMaterial>(TEXT("Damaged2"));
-	Damaged3 = CreateDefaultSubobject<UMaterial>(TEXT("Damaged3"));
+	//SharkDynamicMaterial = CreateDefaultSubobject<UMaterialInstanceDynamic>(TEXT("DynamicMat"));
 	VisualMesh->SetupAttachment(RootComponent);
 	BloodComp->SetupAttachment(RootComponent);
 	ExplosionComp->SetupAttachment(RootComponent);
@@ -22,9 +20,10 @@ AShark::AShark()
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SharkVisualAsset(TEXT("/Game/Models/Shark/shark"));
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> BloodEffect(TEXT("/Game/Effects/Blood/P_BloodSplatter"));
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> ExplosionEffect(TEXT("/Game/Effects/Explosion/M_Explosion_Particles"));
-	static ConstructorHelpers::FObjectFinder<UMaterial> Material1(TEXT("/Game/Models/Shark/shark_damaged_Mat"));
-	static ConstructorHelpers::FObjectFinder<UMaterial> Material2(TEXT("/Game/Models/Shark/shark_damaged2_Mat"));
-	static ConstructorHelpers::FObjectFinder<UMaterial> Material3(TEXT("/Game/Models/Shark/shark_damaged3_Mat"));
+	static ConstructorHelpers::FObjectFinder<UTexture> MainTexture(TEXT("/Game/Models/Shark/shark1"));
+	static ConstructorHelpers::FObjectFinder<UTexture> Texture1(TEXT("/Game/Models/Shark/shark_damaged"));
+	static ConstructorHelpers::FObjectFinder<UTexture> Texture2(TEXT("/Game/Models/Shark/shark_damaged2"));
+	static ConstructorHelpers::FObjectFinder<UTexture> Texture3(TEXT("/Game/Models/Shark/shark_damaged3"));
 
 	if (SharkVisualAsset.Succeeded())
 	{
@@ -37,12 +36,13 @@ AShark::AShark()
 		BloodComp->SetAsset(BloodEffect.Object);
 		ExplosionComp->SetAsset(ExplosionEffect.Object);
 	}
-	if (Material1.Succeeded() && Material2.Succeeded() && Material3.Succeeded())
+	if (Texture1.Succeeded() && Texture2.Succeeded() && Texture3.Succeeded() && MainTexture.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Materials Succeded"));
-		Damaged1 = Material1.Object;
-		Damaged2 = Material2.Object;
-		Damaged3 = Material3.Object;
+		Damaged1 = Texture1.Object;
+		Damaged2 = Texture2.Object;
+		Damaged3 = Texture3.Object;
+		SharkTexture = MainTexture.Object;
 	}
 
 	Stage = 0;
@@ -82,6 +82,10 @@ void AShark::BeginPlay()
 	VisualMesh->OnComponentHit.AddDynamic(this, &AShark::OnHit);
 
 	AttackTimer = 2 * ATTACK_COOLDOWN;
+
+	SharkMat = VisualMesh->GetMaterial(0);
+	SharkDynamicMaterial = UMaterialInstanceDynamic::Create(SharkMat, this);
+	VisualMesh->SetMaterial(0, SharkDynamicMaterial);
 }
 
 // Called every frame
@@ -217,19 +221,21 @@ float AShark::TakeDamage(float Damage, struct FDamageEvent const &DamageEvent, A
 			NewShark->MAX_HEALTH = MAX_HEALTH;
 			NewShark->Health = MAX_HEALTH;
 			Health = MAX_HEALTH;
+			SharkDynamicMaterial->SetTextureParameterValue(FName("SharkTexture"), SharkTexture);
+			BPFirstPerson->SetShark
 		}
 	}
 	if (Health <= (MAX_HEALTH * 0.25))
 	{
-		VisualMesh->SetMaterial(0, Damaged3);
+		SharkDynamicMaterial->SetTextureParameterValue(FName("SharkTexture"), Damaged3);
 	}
 	else if (Health <= (MAX_HEALTH * 0.5))
 	{
-		VisualMesh->SetMaterial(0, Damaged2);
+		SharkDynamicMaterial->SetTextureParameterValue(FName("SharkTexture"), Damaged2);
 	}
 	else if (Health <= (MAX_HEALTH * 0.75))
 	{
-		VisualMesh->SetMaterial(0, Damaged1);
+		SharkDynamicMaterial->SetTextureParameterValue(FName("SharkTexture"), Damaged1);
 	}
 	return DamageCaused;
 }
