@@ -72,6 +72,7 @@ void AShark::BeginPlay()
 			{
 				Interconnect = (AInterconnect *)actor;
 				UE_LOG(LogTemp, Warning, TEXT("We found the interconnect!"));
+				Endless = Interconnect->Endless;
 			}
 		}
 	}
@@ -202,7 +203,7 @@ float AShark::TakeDamage(float Damage, struct FDamageEvent const &DamageEvent, A
 	{
 		Interconnect->SharksDefeated++;
 		BPFirstPerson->TakeDamage(-20, FDamageEvent(), nullptr, this);
-		if (Stage >= 2)
+		if (Stage >= 2 && !Endless)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Shark is dead!"));
 			ExplosionComp->SetRelativeLocationAndRotation(RootComponent->GetComponentLocation(), RootComponent->GetComponentRotation());
@@ -224,6 +225,7 @@ float AShark::TakeDamage(float Damage, struct FDamageEvent const &DamageEvent, A
 			NewShark->SetActorScale3D(GetActorScale3D());
 			NewShark->Stage = Stage;
 			MAX_HEALTH /= 2;
+			MAX_HEALTH = FMath::Max(1, MAX_HEALTH);
 			NewShark->MAX_HEALTH = MAX_HEALTH;
 			NewShark->Health = MAX_HEALTH;
 			Health = MAX_HEALTH;
