@@ -12,6 +12,9 @@ AShark::AShark()
 	VisualMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	BloodComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Blood"));
 	ExplosionComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Explosion"));
+	Damaged1 = CreateDefaultSubobject<UMaterial>(TEXT("Damaged1"));
+	Damaged2 = CreateDefaultSubobject<UMaterial>(TEXT("Damaged2"));
+	Damaged3 = CreateDefaultSubobject<UMaterial>(TEXT("Damaged3"));
 	VisualMesh->SetupAttachment(RootComponent);
 	BloodComp->SetupAttachment(RootComponent);
 	ExplosionComp->SetupAttachment(RootComponent);
@@ -19,6 +22,9 @@ AShark::AShark()
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SharkVisualAsset(TEXT("/Game/Models/Shark/shark"));
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> BloodEffect(TEXT("/Game/Effects/Blood/P_BloodSplatter"));
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> ExplosionEffect(TEXT("/Game/Effects/Explosion/M_Explosion_Particles"));
+	static ConstructorHelpers::FObjectFinder<UMaterial> Material1(TEXT("/Game/Models/Shark/shark_damaged_Mat"));
+	static ConstructorHelpers::FObjectFinder<UMaterial> Material2(TEXT("/Game/Models/Shark/shark_damaged2_Mat"));
+	static ConstructorHelpers::FObjectFinder<UMaterial> Material3(TEXT("/Game/Models/Shark/shark_damaged3_Mat"));
 
 	if (SharkVisualAsset.Succeeded())
 	{
@@ -31,6 +37,14 @@ AShark::AShark()
 		BloodComp->SetAsset(BloodEffect.Object);
 		ExplosionComp->SetAsset(ExplosionEffect.Object);
 	}
+	if (Material1.Succeeded() && Material2.Succeeded() && Material3.Succeeded())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Materials Succeded"));
+		Damaged1 = Material1.Object;
+		Damaged2 = Material2.Object;
+		Damaged3 = Material3.Object;
+	}
+
 	Stage = 0;
 }
 
@@ -205,7 +219,18 @@ float AShark::TakeDamage(float Damage, struct FDamageEvent const &DamageEvent, A
 			Health = MAX_HEALTH;
 		}
 	}
-
+	if (Health <= (MAX_HEALTH * 0.25))
+	{
+		VisualMesh->SetMaterial(0, Damaged3);
+	}
+	else if (Health <= (MAX_HEALTH * 0.5))
+	{
+		VisualMesh->SetMaterial(0, Damaged2);
+	}
+	else if (Health <= (MAX_HEALTH * 0.75))
+	{
+		VisualMesh->SetMaterial(0, Damaged1);
+	}
 	return DamageCaused;
 }
 

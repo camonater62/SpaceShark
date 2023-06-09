@@ -59,4 +59,13 @@ private:
 	float DamageTimer;
 
 	int GetNumberOfSharksInLevel();
+	UPROPERTY(VisibleAnywhere)
+	UMaterial* Damaged1;
+	UPROPERTY(VisibleAnywhere)
+	UMaterial* Damaged2;
+	UPROPERTY(VisibleAnywhere)
+	UMaterial* Damaged3;
+	//UMaterialInstanceDynamic* DamagedDynamic1;
+	//UMaterialInstanceDynamic* DamagedDynamic2;
+	//UMaterialInstanceDynamic* DamagedDynamic3;
 };
