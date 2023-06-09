@@ -18,6 +18,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int SharksDefeated;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Endless;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -59,6 +59,7 @@ private:
 	AActor *BPFirstPerson;
 	AInterconnect *Interconnect;
 	float DamageTimer;
+	bool Endless;
 
 	int GetNumberOfSharksInLevel();
 	UPROPERTY(VisibleAnywhere)
