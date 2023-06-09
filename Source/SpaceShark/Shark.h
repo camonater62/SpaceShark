@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "Interconnect.h"
 #include "Shark.generated.h"
 
 UCLASS()
@@ -16,9 +17,9 @@ class SPACESHARK_API AShark : public AActor
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent *VisualMesh;
 	UPROPERTY(VisibleAnywhere)
-	UNiagaraComponent* BloodComp;
+	UNiagaraComponent *BloodComp;
 	UPROPERTY(VisibleAnywhere)
-	UNiagaraComponent* ExplosionComp;
+	UNiagaraComponent *ExplosionComp;
 
 public:
 	// Sets default values for this actor's properties
@@ -56,17 +57,18 @@ public:
 
 private:
 	AActor *BPFirstPerson;
+	AInterconnect *Interconnect;
 	float DamageTimer;
 
 	int GetNumberOfSharksInLevel();
 	UPROPERTY(VisibleAnywhere)
-	UTexture* Damaged1;
+	UTexture *Damaged1;
 	UPROPERTY(VisibleAnywhere)
-	UTexture* Damaged2;
+	UTexture *Damaged2;
 	UPROPERTY(VisibleAnywhere)
-	UTexture* Damaged3;
-	UTexture* SharkTexture;
-	UMaterialInterface* SharkMat;
+	UTexture *Damaged3;
+	UTexture *SharkTexture;
+	UMaterialInterface *SharkMat;
 	UPROPERTY(VisibleAnywhere)
-	UMaterialInstanceDynamic* SharkDynamicMaterial;
+	UMaterialInstanceDynamic *SharkDynamicMaterial;
 };

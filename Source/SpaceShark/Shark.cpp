@@ -12,7 +12,7 @@ AShark::AShark()
 	VisualMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	BloodComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Blood"));
 	ExplosionComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Explosion"));
-	//SharkDynamicMaterial = CreateDefaultSubobject<UMaterialInstanceDynamic>(TEXT("DynamicMat"));
+	// SharkDynamicMaterial = CreateDefaultSubobject<UMaterialInstanceDynamic>(TEXT("DynamicMat"));
 	VisualMesh->SetupAttachment(RootComponent);
 	BloodComp->SetupAttachment(RootComponent);
 	ExplosionComp->SetupAttachment(RootComponent);
@@ -63,10 +63,15 @@ void AShark::BeginPlay()
 		if (actor)
 		{
 			// UE_LOG(LogTemp, Warning, TEXT("Actor Name: %s"), *actor->GetName());
-			if (actor && actor->GetName().StartsWith("BP_FirstPersonCharacter"))
+			if (actor->GetName().StartsWith("BP_FirstPersonCharacter"))
 			{
 				// UE_LOG(LogTemp, Warning, TEXT("We found the character!"));
 				BPFirstPerson = actor;
+			}
+			else if (actor->GetName().StartsWith("Interconnect"))
+			{
+				Interconnect = (AInterconnect *)actor;
+				UE_LOG(LogTemp, Warning, TEXT("We found the interconnect!"));
 			}
 		}
 	}
@@ -195,6 +200,7 @@ float AShark::TakeDamage(float Damage, struct FDamageEvent const &DamageEvent, A
 	BloodComp->ActivateSystem();
 	if (Health <= 0)
 	{
+		Interconnect->SharksDefeated++;
 		BPFirstPerson->TakeDamage(-20, FDamageEvent(), nullptr, this);
 		if (Stage >= 2)
 		{
@@ -222,7 +228,6 @@ float AShark::TakeDamage(float Damage, struct FDamageEvent const &DamageEvent, A
 			NewShark->Health = MAX_HEALTH;
 			Health = MAX_HEALTH;
 			SharkDynamicMaterial->SetTextureParameterValue(FName("SharkTexture"), SharkTexture);
-			BPFirstPerson->SetShark
 		}
 	}
 	if (Health <= (MAX_HEALTH * 0.25))
